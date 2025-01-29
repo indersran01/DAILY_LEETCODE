@@ -1,0 +1,93 @@
+684. Redundant Connection
+
+In this problem, a tree is an undirected graph that is connected and has no cycles.
+
+You are given a graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added. The added edge has two different vertices chosen from 1 to n, and was not an edge that already existed. The graph is represented as an array edges of length n where edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi in the graph.
+
+Return an edge that can be removed so that the resulting graph is a tree of n nodes. If there are multiple answers, return the answer that occurs last in the input.
+
+ 
+
+Example 1:
+
+
+Input: edges = [[1,2],[1,3],[2,3]]
+Output: [2,3]
+Example 2:
+
+
+Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+Output: [1,4]
+ 
+
+Constraints:
+
+n == edges.length
+3 <= n <= 1000
+edges[i].length == 2
+1 <= ai < bi <= edges.length
+ai != bi
+There are no repeated edges.
+The given graph is connected.
+
+
+code :
+class Solution {
+    public int check(int res[],ArrayList<ArrayList<Integer>>adj,int src ,boolean visit[])
+    {
+        
+
+        visit[src]=true;
+
+        int count=0;
+        for(int node:adj.get(src))
+        {
+            if(visit[node]==false)
+            {
+                count+=1+check(res,adj,node,visit);
+            }
+        }
+        return count ;
+
+    }
+    public int[] findRedundantConnection(int[][] edges) 
+    {
+        int res[]=new int[2];
+
+        ArrayList<ArrayList<Integer>>adj=new ArrayList<>();
+
+        for(int i=0;i<=edges.length;i++)
+        adj.add(new ArrayList<>());
+        
+        for(int e[]:edges)
+        {
+            int s=e[0];
+            int end=e[1];
+
+            adj.get(s).add(end);
+            adj.get(end).add(s);
+        }
+
+
+        for(int i=1;i<=edges.length;i++)
+        {
+            int s=edges[edges.length-i][0];
+            int e=edges[edges.length-i][1];
+            adj.get(s).remove(Integer.valueOf(e));
+            adj.get(e).remove(Integer.valueOf(s));
+
+            boolean visit[]=new boolean[edges.length+1];
+            int count=check(res,adj,1,visit);
+            if(count ==edges.length-1)
+            {
+                res[0]=s;
+                res[1]=e;
+                return res;
+            }
+            adj.get(s).add(e);
+            adj.get(e).add(s);
+        }
+        return res;
+        
+    }
+}
