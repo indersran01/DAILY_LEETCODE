@@ -1,0 +1,122 @@
+827. Making A Large Island
+
+You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1.
+
+Return the size of the largest island in grid after applying this operation.
+
+An island is a 4-directionally connected group of 1s.
+
+ 
+
+Example 1:
+
+Input: grid = [[1,0],[0,1]]
+Output: 3
+Explanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3.
+Example 2:
+
+Input: grid = [[1,1],[1,0]]
+Output: 4
+Explanation: Change the 0 to 1 and make the island bigger, only one island with area = 4.
+Example 3:
+
+Input: grid = [[1,1],[1,1]]
+Output: 4
+Explanation: Can't change any 0 to 1, only one island with area = 4.
+ 
+
+Constraints:
+
+n == grid.length
+n == grid[i].length
+1 <= n <= 500
+grid[i][j] is either 0 or 1.
+
+code:
+class Solution 
+{
+    public int solve(int grid[][],int i,int j,boolean visit[][],int sr)
+    {
+        if(i<0||i>=grid.length||j<0||j>=grid.length)
+        return 0;
+        visit[i][j]=true;
+        grid[i][j]=sr;
+
+        int dx[]={1,-1,0,0};
+        int dy[]={0,0,1,-1};
+
+        int count=1;
+
+        for(int x=0;x<4;x++)
+        {
+            int nr=i+dx[x];
+            int nc=j+dy[x];
+
+            if(nr>=0&&nc>=0&&nr<grid.length&&nc<grid.length&&visit[nr][nc]==false)
+            {
+                if(grid[nr][nc]==1)
+                {
+                    count+=solve(grid,nr,nc,visit,sr);
+                }
+            }
+        }
+        
+        return count;
+    }
+
+    public int largestIsland(int[][] grid) {
+
+        int res=0;
+        int dp[][]=new int[grid.length+1][grid.length+1];
+        for(int a[]:dp)
+        Arrays.fill(a,-1);
+        boolean visit[][]=new boolean[grid.length][grid.length];
+
+        HashMap<Integer,Integer>map=new HashMap<>();
+        int sr=1001;
+
+        for(int i=0;i<grid.length;i++)
+        {
+            for(int j=0;j<grid.length;j++)
+            {
+                if(grid[i][j]==1&&visit[i][j]==false)
+                {
+                    int count=solve(grid,i,j,visit,sr);
+                    map.put(sr,count);
+                    sr++;
+                }
+            }
+        }
+
+        for(int i=0;i<grid.length;i++)
+        {
+            for(int j=0;j<grid.length;j++)
+            {
+                HashSet<Integer>s=new HashSet<>();
+                if(grid[i][j]==0)
+                {
+                    int dx[]={1,-1,0,0};
+                    int dy[]={0,0,1,-1};
+
+                    int count=1;
+
+                    for(int x=0;x<4;x++)
+                    {
+                        int nr=i+dx[x];
+                        int nc=j+dy[x];
+
+                        if(nr>=0&&nc>=0&&nr<grid.length&&nc<grid.length&&grid[nr][nc]>0&&s.contains(grid[nr][nc])==false)
+                        {
+                            count+=map.get(grid[nr][nc]);
+                            s.add(grid[nr][nc]);
+                        }
+                    }
+
+                    res=Math.max(count,res);
+                }
+            }
+        }
+       
+        return res==0?grid.length*grid.length:res;
+    }
+}
