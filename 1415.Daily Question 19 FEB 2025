@@ -1,0 +1,63 @@
+1415. The k-th Lexicographical String of All Happy Strings of Length n
+
+A happy string is a string that:
+
+consists only of letters of the set ['a', 'b', 'c'].
+s[i] != s[i + 1] for all values of i from 1 to s.length - 1 (string is 1-indexed).
+For example, strings "abc", "ac", "b" and "abcbabcbcb" are all happy strings and strings "aa", "baa" and "ababbc" are not happy strings.
+
+Given two integers n and k, consider a list of all happy strings of length n sorted in lexicographical order.
+
+Return the kth string of this list or return an empty string if there are less than k happy strings of length n.
+
+Example 1:
+
+Input: n = 1, k = 3
+Output: "c"
+Explanation: The list ["a", "b", "c"] contains all happy strings of length 1. The third string is "c".
+Example 2:
+
+Input: n = 1, k = 4
+Output: ""
+Explanation: There are only 3 happy strings of length 1.
+Example 3:
+
+Input: n = 3, k = 9
+Output: "cab"
+Explanation: There are 12 different happy string of length 3 ["aba", "abc", "aca", "acb", "bab", "bac", "bca", "bcb", "cab", "cac", "cba", "cbc"]. You will find the 9th string = "cab"
+ 
+
+Constraints:
+
+1 <= n <= 10
+1 <= k <= 100
+
+
+code:
+class Solution {
+    public void solve(String s, int n, StringBuilder temp, int[] count, int k, String[] result) {
+        if (temp.length() == n) {
+            count[0]++;
+            if (count[0] == k) {
+                result[0] = temp.toString();
+            }
+            return;
+        }
+        if (count[0] >= k) return;
+
+        for (int ind = 0; ind < s.length(); ind++) {
+            if (temp.length() == 0 || s.charAt(ind) != temp.charAt(temp.length() - 1)) {
+                temp.append(s.charAt(ind));
+                solve(s, n, temp, count, k, result);
+                temp.deleteCharAt(temp.length() - 1);
+            }
+        }
+    }
+
+    public String getHappyString(int n, int k) {
+        int[] count = {0};
+        String[] result = {""};
+        solve("abc", n, new StringBuilder(), count, k, result);
+        return result[0];
+    }
+}
